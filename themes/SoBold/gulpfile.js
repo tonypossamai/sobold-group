@@ -9,7 +9,6 @@ const sass = require('gulp-sass');
 const sourcemaps = require('gulp-sourcemaps');
 const terser = require('gulp-terser');
 
-
 // Create basic Gulp tasks
 
 gulp.task('sass', function() {
@@ -30,6 +29,30 @@ gulp.task('sass', function() {
     .pipe(gulp.dest('./build/css'));
 });
 
+gulp.task('lint', function() {
+  return gulp
+    .src(['./js/*.js'])
+    .pipe(prettyError())
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+});
+
+gulp.task(
+  'scripts',
+  gulp.series('lint', function() {
+    return gulp
+      .src('./js/*.js')
+      .pipe(terser())
+      .pipe(
+        rename({
+          extname: '.min.js'
+        })
+      )
+      .pipe(gulp.dest('./build/js'));
+  })
+);
+
 // Set-up BrowserSync and watch
 
 gulp.task('browser-sync', function() {
@@ -41,14 +64,14 @@ gulp.task('browser-sync', function() {
   ];
 
   browserSync.init(files, {
-    proxy: 'http://localhost:8888/sobold-group'
+    proxy: 'http://localhost:8888/sobold-group/wordpress'
   });
 
   gulp.watch(files).on('change', browserSync.reload);
 });
 
 gulp.task('watch', function() {
-  //gulp.watch('js/*.js', gulp.series('scripts'));
+  gulp.watch('js/*.js', gulp.series('scripts'));
   gulp.watch('sass/*.scss', gulp.series('sass'));
 });
 
