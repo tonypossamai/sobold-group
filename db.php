@@ -1,1 +1,0 @@
-/Applications/MAMP/htdocs/sobold-group/wordpress/wp-content/plugins/query-monitor/wp-content/db.php
